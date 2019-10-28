@@ -130,7 +130,7 @@ function localSchema() {
     productsField.args = productsField.args.filter(a => a.name != 'sort');
     // Remove all fields from ProductFilterInput except "sku"
     let productFilterInput = schemaBuilder.getType('ProductFilterInput');
-    productFilterInput.inputFields = productFilterInput.inputFields.filter(f => f.name == 'sku');
+    productFilterInput.inputFields = productFilterInput.inputFields.filter(f => f.name == 'sku' || f.name === 'url_key');
 
     let categoryField = queryRootType.fields.find(f => f.name == 'category');
     // Change category(id: Int) to category(id: String)

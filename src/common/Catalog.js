@@ -61,7 +61,7 @@ class CategoryTree {
         return {
             id: data.id,
             name: data.name,
-            description: data.url
+            description: data.url,
         };
     }
 
@@ -71,7 +71,19 @@ class CategoryTree {
 
     get children() {
         return this.__load().then((data) => {
-            return data.subcategories.map(category => this.__convertData(category));
+            if (!data.subcategories || data.subcategories.length == 0) {
+                return [];
+            }
+            return data.subcategories.map((category) => {
+                this.categoryTreeLoader.prime(category.id, category);
+                return new CategoryTree({
+                    categoryId: category.id,
+                    graphqlContext: this.graphqlContext,
+                    actionParameters: this.actionParameters,
+                    categoryTreeLoader: this.categoryTreeLoader,
+                    productsLoader: this.productsLoader
+                })
+            });
         });
     }
 
@@ -79,7 +91,6 @@ class CategoryTree {
     products(params) {
         // We don't need to call this.__load() here because only fetching the products
         // of a category does not require fetching the category itself
-
         return new Products({
             search: {
                 categoryId: this.categoryId,
@@ -132,10 +143,11 @@ class Products {
      */
     __convertData(data) {
         return {
-            total_count: data.total,
+            total_count: data.pagination.totalResults,
             page_info: {
-                current_page: (data.offset / data.limit),
-                page_size: data.limit
+                current_page: data.pagination.currentPage,
+                page_size: data.pagination.pageSize,
+                total_pages: data.pagination.totalPages,
             }
         };
     }
@@ -204,16 +216,17 @@ class Product {
 
     __convertData(data) {
         return {
-            sku: data.sku,
-            name: data.title,
+            sku: data.code,
+            url_key: data.code,
+            name: data.name,
             description: {
-                html: data.description
+                html: data.description || '',
             },
             price: {
                 regularPrice: {
                     amount: {
-                        currency: data.price.currency,
-                        value: data.price.amount
+                        currency: data.price.currencyIso,
+                        value: data.price.value
                     }
                 }
             }

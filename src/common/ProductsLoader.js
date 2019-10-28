@@ -15,6 +15,7 @@
 'use strict';
 
 const DataLoader = require('dataloader');
+const rp = require('request-promise');
 
 class ProductsLoader {
 
@@ -37,7 +38,7 @@ class ProductsLoader {
             }));
         };
 
-        this.loader = new DataLoader(keys => loadingFunction(keys), {cacheKeyFn: cacheKeyFunction});
+        this.loader = new DataLoader(keys => loadingFunction(keys), { cacheKeyFn: cacheKeyFunction });
     }
 
     load(key) {
@@ -64,71 +65,33 @@ class ProductsLoader {
         // This method returns a Promise, for example to simulate some HTTP REST call being performed
         // to the 3rd-party commerce system.
 
-        if (params.search || params.categoryId) { // Text search or fetching of the products of a category
-            return Promise.resolve({
-                total: 2,
-                offset: params.currentPage * params.pageSize,
-                limit: params.pageSize,
-                products: [
-                    {
-                        sku: 'product-1',
-                        title: 'Product #1',
-                        description: `Fetched product #1 from ${actionParameters.url}`,
-                        price: {
-                            currency: 'USD',
-                            amount: 12.34
-                        },
-                        categoryIds: [ 'cat1', 'cat2']
-                    },
-                    {
-                        sku: 'product-2',
-                        title: 'Product #2',
-                        description: `Fetched product #2 from ${actionParameters.url}`,
-                        price: {
-                            currency: 'USD',
-                            amount: 56.78
-                        },
-                        categoryIds: [ 'cat2', 'cat3']
-                    }
-                ]
-            });
-        } else if (params.filter && params.filter.sku) { // Get a product by sku
-            if (params.filter.sku.eq) {
-                return Promise.resolve({
-                    total: 1,
-                    offset: params.currentPage * params.pageSize,
-                    limit: params.pageSize,
-                    products: [
+        if (params.search) {
+            return rp({
+                uri: `https://b2c-accelerator.test.diconium.com/rest/v2/electronics/products/search?currentPage=${params.currentPage}&fields=DEFAULT&pageSize=${params.pageSize}&query=${params.search}`,
+                json: true
+            })
+                .then(response => response)
+        } else if (params.categoryId) { // Text search or fetching of the products of a category
+            return rp({
+                uri: `https://b2c-accelerator.test.diconium.com/rest/v2/electronics/products/search?currentPage=${params.currentPage}&fields=DEFAULT&pageSize=${params.pageSize}&query=%3A%3AallCategories%3A${params.categoryId}`,
+                json: true
+            })
+                .then(response => response)
+        } else if (params.filter && params.filter.url_key) { // Get a product by sku
+            if (params.filter.url_key.eq) {
+                return rp({
+                    uri: `https://b2c-accelerator.test.diconium.com/rest/v2/electronics/products/${params.filter.url_key.eq}`,
+                    json: true
+                })
+                    .then(response => (
                         {
-                            sku: params.filter.sku.eq,
-                            title: `Product #${params.filter.sku.eq}`,
-                            description: `Fetched product #${params.filter.sku.eq} from ${actionParameters.url}`,
-                            price: {
-                                currency: 'USD',
-                                amount: 12.34
-                            },
-                            categoryIds: [ 'cat1', 'cat2']
-                        }
-                    ]
-                });
-            } else if (params.filter.sku.in) { // Get multiple products by skus
-                return Promise.resolve({
-                    total: params.filter.sku.in.length,
-                    offset: params.currentPage * params.pageSize,
-                    limit: params.pageSize,
-                    products: params.filter.sku.in.map(sku => {
-                        return {
-                            sku: sku,
-                            title: `Product #${sku}`,
-                            description: `Fetched product #${sku} from ${actionParameters.url}`,
-                            price: {
-                                currency: 'USD',
-                                amount: 12.34
-                            },
-                            categoryIds: [ 'cat1', 'cat2']
-                        }
-                    })
-                });
+                            products: [response],
+                            pagination: { totalResults: 1, currentPage: params.currentPage, pageSize: params.pageSize, totalPages: 1 }
+                        }))
+                        .catch(() => ({
+                            products: [],
+                            pagination: { totalResults: 0, currentPage: params.currentPage, pageSize: params.pageSize, totalPages: 0 }
+                        }));
             }
         }
     }

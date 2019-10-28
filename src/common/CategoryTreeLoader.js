@@ -51,6 +51,10 @@ class CategoryTreeLoader {
         return this.loader.load(categoryId);
     }
 
+    prime(key, value){
+        return this.loader.prime(key,value);
+    }
+
     /**
      * In a real 3rd-party integration, this method would query the 3rd-party system
      * in order to fetch a category based on the category id. This method returns a Promise,
