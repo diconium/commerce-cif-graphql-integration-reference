@@ -15,6 +15,7 @@
 'use strict';
 
 const DataLoader = require('dataloader');
+const rp = require('request-promise');
 
 class CategoryTreeLoader {
 
@@ -67,12 +68,12 @@ class CategoryTreeLoader {
         // The function CategoryTree.products() shows how one would have to fetch the products
         // in an extra request if they are being requested in the GraphQL query.
 
-        return Promise.resolve({
-            id: categoryId,
-            title: `Category #${categoryId}`,
-            description: `Fetched category #${categoryId} from ${actionParameters.url}`,
-            subcategories: [ `${categoryId}-1`, `${categoryId}-2`]
-        });
+        // eslint-disable-next-line no-undef
+        return rp({
+                uri: `https://b2c-accelerator.test.diconium.com/rest/v2/electronics/catalogs/electronicsProductCatalog/Online/categories/${categoryId}`,
+                json: true
+            })
+            .then(response => response)
     }
 }
 

@@ -60,8 +60,8 @@ class CategoryTree {
     __convertData(data) {
         return {
             id: data.id,
-            name: data.title,
-            description: data.description
+            name: data.name,
+            description: data.url
         };
     }
 
@@ -70,20 +70,8 @@ class CategoryTree {
     }
 
     get children() {
-        return this.__load().then(() => {
-            if (!this.data.subcategories || this.data.subcategories.length == 0) {
-                return [];
-            }
-
-            return this.data.subcategories.map(categoryId =>
-                new CategoryTree({
-                    categoryId: categoryId,
-                    graphqlContext: this.graphqlContext,
-                    actionParameters: this.actionParameters,
-                    categoryTreeLoader : this.categoryTreeLoader,
-                    productsLoader: this.productsLoader
-                })
-            );
+        return this.__load().then((data) => {
+            return data.subcategories.map(category => this.__convertData(category));
         });
     }
 

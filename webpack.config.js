@@ -26,5 +26,6 @@ module.exports = {
         libraryTarget: 'commonjs',
         path: path.resolve(__dirname, '.webpack'),
         filename: '[name].js'
-    }
+    },
+    mode: 'development'
 };
