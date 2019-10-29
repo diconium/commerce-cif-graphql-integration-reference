@@ -59,9 +59,9 @@ class CategoryTree {
      * @returns {Object} The backend category data converted into a GraphQL "CategoryTree" data.
      */
     __convertData(data) {
-        if(!this.urlName && this.urlName !== null) {
+        if (!this.urlName && this.urlName !== null) {
             this.urlName = data.name;
-        }  
+        }
 
         return {
             id: data.id,
@@ -86,7 +86,7 @@ class CategoryTree {
                 this.categoryTreeLoader.prime(category.id, category);
                 return new CategoryTree({
                     categoryId: category.id,
-                    urlName: (this.urlName !== null ? this.urlName + '/' : '')  + category.name,
+                    urlName: (this.urlName !== null ? this.urlName + '/' : '') + category.name,
                     graphqlContext: this.graphqlContext,
                     actionParameters: this.actionParameters,
                     categoryTreeLoader: this.categoryTreeLoader,
@@ -100,7 +100,7 @@ class CategoryTree {
         return this.__load().then((data) => {
             return data.subcategories ? data.subcategories.length : 0;
         });
-    } 
+    }
 
     // Getters cannot have arguments, so we define a function
     products(params) {
@@ -232,12 +232,13 @@ class Product {
     __convertData(data) {
         return {
             sku: data.code,
-            id: data.code,
+            id: 1,
             url_key: data.code,
             name: data.name,
             description: {
                 html: data.description || '',
             },
+            stock_status: data.stock && data.stock.stockLevelStatus === 'inStock' ? "IN_STOCK" : "OUT_OF_STOCK",
             price: {
                 regularPrice: {
                     amount: {
@@ -247,14 +248,29 @@ class Product {
                 }
             },
             image: {
-                url: data.images.length > 0 ? `https://b2c-accelerator.test.diconium.com${data.images[0].url}` : '',
-                label: data.images.length > 0 ? data.images[0].altText : ''
+                url: data.images && data.images.length > 0 ? `https://b2c-accelerator.test.diconium.com${data.images[0].url}` : '',
+                label: data.images && data.images.length > 0 ? data.images[0].altText || '' : ''
             },
             small_image: {
-                url: data.images.length > 0 ? `https://b2c-accelerator.test.diconium.com${data.images[0].url}` : '',
-                label: data.images.length > 0 ? data.images[0].altText : ''
-            }
+                url: data.images && data.images.length > 0 ? `https://b2c-accelerator.test.diconium.com${data.images[0].url}` : '',
+                label: data.images && data.images.length > 0 ? data.images[0].altText || '' : ''
+            },
+            thumbnail: {
+                url: data.images && data.images.length > 0 ? `https://b2c-accelerator.test.diconium.com${data.images[0].url}` : '',
+                label: data.images && data.images.length > 0 ? data.images[0].altText || '' : ''
+            },
+            categories: [],
         }
+    }
+
+    get media_gallery_entries() {
+        return this.productData.images ? this.productData.images.filter(image => image.format === 'product' || image.format === 'zoom').map((image, index) => ({
+            file: image.url,
+            position: index,
+            label: image.altText || '',
+            media_type: 'image',
+            disabled: false,
+        })) : []
     }
 }
 
