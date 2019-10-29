@@ -74,7 +74,7 @@ class CategoryTreeLoader {
 
         // eslint-disable-next-line no-undef
         return rp({
-                uri: `https://b2c-accelerator.test.diconium.com/rest/v2/electronics/catalogs/electronicsProductCatalog/Online/categories/${categoryId}`,
+                uri: `https://b2c-accelerator.test.diconium.com/rest/v2/electronics/catalogs/electronicsProductCatalog/Online/categories/${categoryId}?fields=FULL`,
                 json: true
             })
             .then(response => response)

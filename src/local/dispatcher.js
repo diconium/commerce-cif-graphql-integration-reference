@@ -103,7 +103,10 @@ function resolve(args) {
                     categoryTreeLoader: categoryTreeLoader,
                     productsLoader: productsLoader
                 });
-            }
+            },
+            storeConfig: () => ({
+                secure_base_media_url: "https://dummy.diconium.com/media",
+            })
         }; 
 
         // Main resolver action, partially delegating resolution to the "remote schemas"
@@ -121,7 +124,7 @@ function localSchema() {
 
     let schemaBuilder = new SchemaBuilder(magentoSchema)
         .removeMutationType()
-        .filterQueryFields(new Set(["products", "category"]));
+        .filterQueryFields(new Set(["products", "category", "storeConfig"]));
 
     let queryRootType = schemaBuilder.getType('Query');
 
@@ -131,16 +134,6 @@ function localSchema() {
     // Remove all fields from ProductFilterInput except "sku"
     let productFilterInput = schemaBuilder.getType('ProductFilterInput');
     productFilterInput.inputFields = productFilterInput.inputFields.filter(f => f.name == 'sku' || f.name === 'url_key');
-
-    let categoryField = queryRootType.fields.find(f => f.name == 'category');
-    // Change category(id: Int) to category(id: String)
-    categoryField.args[0].type.name = 'String';
-    // Change CategoryInterface.id from Int to String
-    let categoryInterfaceType = schemaBuilder.getType('CategoryInterface');
-    categoryInterfaceType.fields.find(f => f.name == 'id').type.name = 'String';
-    // Change CategoryTree.id from Int to String
-    let categoryTreeType = schemaBuilder.getType('CategoryTree');
-    categoryTreeType.fields.find(f => f.name == 'id').type.name = 'String';
 
     return schemaBuilder.build(10);
 }

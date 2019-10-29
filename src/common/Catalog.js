@@ -62,6 +62,9 @@ class CategoryTree {
             id: data.id,
             name: data.name,
             description: data.url,
+            url_path: data.id,
+            updated_at: data.lastModified,
+            position: 0,
         };
     }
 
@@ -86,6 +89,12 @@ class CategoryTree {
             });
         });
     }
+
+    get children_count() {
+        return this.__load().then((data) => {
+            return data.subcategories ? data.subcategories.length : 0;
+        });
+    } 
 
     // Getters cannot have arguments, so we define a function
     products(params) {
@@ -217,6 +226,7 @@ class Product {
     __convertData(data) {
         return {
             sku: data.code,
+            id: data.code,
             url_key: data.code,
             name: data.name,
             description: {
@@ -229,6 +239,14 @@ class Product {
                         value: data.price.value
                     }
                 }
+            },
+            image: {
+                url: `https://b2c-accelerator.test.diconium.com${data.images[0].url}`,
+                label: data.images[0].altText
+            },
+            small_image: {
+                url: `https://b2c-accelerator.test.diconium.com${data.images[0].url}`,
+                label: data.images[0].altText
             }
         }
     }
