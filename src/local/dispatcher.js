@@ -77,7 +77,8 @@ function resolve(args) {
 
         // Passed to all resolver actions, can for example contain an authentication token
         let context = {
-            dummy: "Can be some authentication token"
+            dummy: "Can be some authentication token",
+            user: "anonymous",
         };
 
         // We instantiate some loaders common to the "products" and "category" resolvers

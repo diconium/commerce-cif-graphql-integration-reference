@@ -18,6 +18,8 @@ const magentoSchema = require('../resources/magento-schema-2.3.2.min.json');
 const { graphql } = require('graphql');
 const SchemaBuilder = require('../common/SchemaBuilder.js');
 const Cart = require('../common/Cart.js');
+const rp = require('request-promise');
+
 
 let cachedSchema = null;
 
@@ -43,7 +45,7 @@ function resolve(args) {
         createEmptyCart: (params, context) => { // eslint-disable-line no-unused-vars
             // In a real integration, this would for example make a REST POST request to
             // the 3rd-party system to create a new cart
-            return Promise.resolve("thisisthenewcartid");
+            return postCart(context);
         }
     };   
 
@@ -53,6 +55,15 @@ function resolve(args) {
     }).catch(error => {
         console.error(error);
     });
+}
+
+const postCart = ({user}) => {
+    return rp({
+        method: 'POST',
+        uri: `https://b2c-accelerator.test.diconium.com/rest/v2/electronics/users/${user}/carts`,
+        json: true
+    })
+    .then(({code, guid}) => user === 'anonymous' ? guid : code)
 }
 
 module.exports.main = resolve;
