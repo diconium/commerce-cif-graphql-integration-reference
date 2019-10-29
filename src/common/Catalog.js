@@ -33,6 +33,7 @@ class CategoryTree {
      */
     constructor(parameters) {
         this.categoryId = parameters.categoryId;
+        this.urlName = parameters.urlName || null;
         this.graphqlContext = parameters.graphqlContext;
         this.actionParameters = parameters.actionParameters;
         this.categoryTreeLoader = parameters.categoryTreeLoader || new CategoryTreeLoader(parameters.actionParameters);
@@ -58,11 +59,15 @@ class CategoryTree {
      * @returns {Object} The backend category data converted into a GraphQL "CategoryTree" data.
      */
     __convertData(data) {
+        if(!this.urlName && this.urlName !== null) {
+            this.urlName = data.name;
+        }  
+
         return {
             id: data.id,
             name: data.name,
             description: data.url,
-            url_path: data.id,
+            url_path: this.urlName === null ? null : this.urlName.toLowerCase().split('&').join('').split(' ').join(''),
             updated_at: data.lastModified,
             position: 0,
         };
@@ -81,6 +86,7 @@ class CategoryTree {
                 this.categoryTreeLoader.prime(category.id, category);
                 return new CategoryTree({
                     categoryId: category.id,
+                    urlName: (this.urlName !== null ? this.urlName + '/' : '')  + category.name,
                     graphqlContext: this.graphqlContext,
                     actionParameters: this.actionParameters,
                     categoryTreeLoader: this.categoryTreeLoader,
@@ -241,12 +247,12 @@ class Product {
                 }
             },
             image: {
-                url: `https://b2c-accelerator.test.diconium.com${data.images[0].url}`,
-                label: data.images[0].altText
+                url: data.images.length > 0 ? `https://b2c-accelerator.test.diconium.com${data.images[0].url}` : '',
+                label: data.images.length > 0 ? data.images[0].altText : ''
             },
             small_image: {
-                url: `https://b2c-accelerator.test.diconium.com${data.images[0].url}`,
-                label: data.images[0].altText
+                url: data.images.length > 0 ? `https://b2c-accelerator.test.diconium.com${data.images[0].url}` : '',
+                label: data.images.length > 0 ? data.images[0].altText : ''
             }
         }
     }
