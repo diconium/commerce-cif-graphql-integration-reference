@@ -67,20 +67,20 @@ class ProductsLoader {
 
         if (params.search) {
             return rp({
-                uri: `https://b2c-accelerator.test.diconium.com/rest/v2/electronics/products/search?currentPage=${params.currentPage}&fields=FULL&pageSize=${params.pageSize}&query=${params.search}`,
+                uri: `https://sap-commerce.test.diconium.com/occ/v2/electronics/products/search?currentPage=${params.currentPage}&fields=FULL&pageSize=${params.pageSize}&query=${params.search}`,
                 json: true
             })
                 .then(response => response)
         } else if (params.categoryId) { // Text search or fetching of the products of a category
             return rp({
-                uri: `https://b2c-accelerator.test.diconium.com/rest/v2/electronics/products/search?currentPage=${params.currentPage}&fields=FULL&pageSize=${params.pageSize}&query=%3A%3AallCategories%3A${params.categoryId}`,
+                uri: `https://sap-commerce.test.diconium.com/occ/v2/electronics/products/search?currentPage=${params.currentPage}&fields=FULL&pageSize=${params.pageSize}&query=%3A%3AallCategories%3A${params.categoryId}`,
                 json: true
             })
                 .then(response => response)
         } else if (params.filter && params.filter.url_key) { // Get a product by sku
             if (params.filter.url_key.eq) {
                 return rp({
-                    uri: `https://b2c-accelerator.test.diconium.com/rest/v2/electronics/products/${params.filter.url_key.eq}?fields=FULL`,
+                    uri: `https://sap-commerce.test.diconium.com/occ/v2/electronics/products/${params.filter.url_key.eq}?fields=FULL`,
                     json: true
                 }).then(response => (
                     {

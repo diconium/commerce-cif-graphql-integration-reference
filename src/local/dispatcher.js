@@ -106,7 +106,7 @@ function resolve(args) {
                 });
             },
             storeConfig: () => ({
-                secure_base_media_url: "https://b2c-accelerator.test.diconium.com/",
+                secure_base_media_url: "https://sap-commerce.test.diconium.com/",
             })
         }; 
 

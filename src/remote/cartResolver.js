@@ -60,7 +60,7 @@ function resolve(args) {
 const postCart = ({user}) => {
     return rp({
         method: 'POST',
-        uri: `https://b2c-accelerator.test.diconium.com/rest/v2/electronics/users/${user}/carts`,
+        uri: `https://sap-commerce.test.diconium.com/occ/v2/electronics/users/${user}/carts`,
         json: true
     })
     .then(({code, guid}) => user === 'anonymous' ? guid : code)

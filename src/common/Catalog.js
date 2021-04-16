@@ -248,15 +248,15 @@ class Product {
                 }
             },
             image: {
-                url: data.images && data.images.length > 0 ? `https://b2c-accelerator.test.diconium.com${data.images[0].url}` : '',
+                url: data.images && data.images.length > 0 ? `https://sap-commerce.test.diconium.com${data.images[0].url}` : '',
                 label: data.images && data.images.length > 0 ? data.images[0].altText || '' : ''
             },
             small_image: {
-                url: data.images && data.images.length > 0 ? `https://b2c-accelerator.test.diconium.com${data.images[0].url}` : '',
+                url: data.images && data.images.length > 0 ? `https://sap-commerce.test.diconium.com${data.images[0].url}` : '',
                 label: data.images && data.images.length > 0 ? data.images[0].altText || '' : ''
             },
             thumbnail: {
-                url: data.images && data.images.length > 0 ? `https://b2c-accelerator.test.diconium.com${data.images[0].url}` : '',
+                url: data.images && data.images.length > 0 ? `https://sap-commerce.test.diconium.com${data.images[0].url}` : '',
                 label: data.images && data.images.length > 0 ? data.images[0].altText || '' : ''
             },
             categories: [],
